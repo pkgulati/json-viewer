@@ -211,7 +211,7 @@
                 </textarea>
             </div>
             <div class="panel">
-                <json-viewer>
+                <json-viewer openlevel=2>
                     [{"_id":"5d7794d54662ef382cae9b0b","index":0,"guid":"d34f2f76-7e70-49ac-8059-d765865b5249","isActive":true,"balance":"$2,897.06","picture":"http://placehold.it/32x32","age":21,"eyeColor":"blue","name":{"first":"Odonnell","last":"Lee"},"company":"EARTHMARK","email":"odonnell.lee@earthmark.co.uk","phone":"+1
                     (993) 590-2450","address":"869 Leonard Street, Soham, Tennessee, 1232","about":"Do adipisicing non
                     fugiat mollit nulla mollit. Occaecat reprehenderit sit qui ipsum nulla irure. Excepteur Lorem mollit
@@ -240,7 +240,7 @@
                 </json-viewer>
             </div>
         </div>
-        <script src="./src/index.js"></script>
+        <script src="./build/index.js"></script>
         <script>
             (() => {
                 const json = document.querySelector('#json');
@@ -248,6 +248,7 @@
                 const button = document.querySelector('button');
 
                 button.addEventListener('click', () => {
+                    
                     viewer.data = JSON.parse(json.value);
                 });
             })();

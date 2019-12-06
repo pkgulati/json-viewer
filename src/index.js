@@ -12,14 +12,22 @@ const ObjectKey = ({ isCollapsable, collapsed, onClick, key }) => html`
 `;
 
 class JsonNestedObjectNode extends TinyElement {
+   
     data = null;
     collapsed = true;
+   
+    connectedCallback() {
+        super.connectedCallback();
+        this.collapsed = !(this.settings && this.settings.openlevel && this.level <= this.settings.openlevel);
+    }
 
     static get properties() {
         return {
             data: JsonObject,
             collapsed: Boolean,
-            key: String
+            key: String,
+            settings:JsonObject,
+            level:Number
         };
     }
 
@@ -48,7 +56,7 @@ class JsonNestedObjectNode extends TinyElement {
                   </span>
               `
             : html`
-                  <json-object-node data=${node}></json-object-node>
+                  <json-object-node data=${node} settings=${this.settings} level=${this.level}></json-object-node>
               `;
     }
 
@@ -79,19 +87,21 @@ class JsonObjectNode extends TinyElement {
     static get properties() {
         return {
             data: JsonObject,
-            collapsed: Boolean
+            collapsed: Boolean,
+            settings:JsonObject,
+            level:Number
         };
     }
 
     render() {
         const { data } = this;
-
+        
         return html`
             <ul>
                 ${Object.keys(data).map(key =>
                     html`
                         <li>
-                            <json-nested-object-node key=${key} data=${data[key]}></json-nested-object-node>
+                            <json-nested-object-node key=${key} data=${data[key]} settings=${this.settings} level=${this.level+1}></json-nested-object-node>
                         </li>
                     `.withKey(key)
                 )}
@@ -102,23 +112,26 @@ class JsonObjectNode extends TinyElement {
 
 class JsonViewer extends TinyElement {
     data = null;
-
+    settings = {};
+    
     static get is() {
         return 'json-viewer';
     }
 
     static get properties() {
         return {
-            data: JsonObject
+            data: JsonObject,
+            settings : JsonObject,
+            openlevel : Number
         };
     }
 
     connectedCallback() {
         const json = this.innerText.trim();
         if (json) this.data = JSON.parse(json);
-
         this.attachShadow({ mode: 'open' });
-
+        this.settings = this.settings || {};
+        this.settings.openlevel = this.openlevel;
         super.connectedCallback();
     }
 
@@ -184,6 +197,10 @@ class JsonViewer extends TinyElement {
                     user-select: none;
                 }
 
+                span:not(.collapsable) {
+                    margin-left: 27px;
+                }
+
                 .string {
                     color: var(--string-color);
                 }
@@ -235,7 +252,7 @@ class JsonViewer extends TinyElement {
                     border-left: 1px solid #666;
                 }
             </style>
-            <json-object-node data=${this.data}></json-object-node>
+            <json-object-node data=${this.data} settings=${this.settings} level=0></json-object-node>
         `;
     }
 }
